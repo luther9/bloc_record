@@ -10,4 +10,16 @@ module Selection
     data = Hash[columns.zip(row)]
     new(data)
   end
+
+  def find_by attribute, value
+    objects = []
+    command = <<-SQL
+      SELECT * FROM #{table}
+      WHERE #{attribute} = #{value};
+    SQL
+    connection.execute(command) { |row|
+      objects.push(new(Hash[columns.zip(row)]))
+    }
+    objects
+  end
 end
