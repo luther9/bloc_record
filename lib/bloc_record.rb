@@ -1,6 +1,10 @@
 module BlocRecord
   def self.connect_to filename
-    @database_filename = filename
+    if File.exist?(filename)
+      @database_filename = filename
+    else
+      raise "File doesn't exist"
+    end
   end
 
   def self.database_filename

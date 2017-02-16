@@ -20,7 +20,11 @@ module Selection
       WHERE id = #{id};
     SQL
 
-    init_object_from_row(row)
+    do
+      init_object_from_row(row)
+    rescue ArgumentError
+      raise ArgumentError.new("id #{id} not found")
+    end
   end
 
   def find_by attribute, value
@@ -29,7 +33,11 @@ module Selection
       WHERE #{attribute} = #{BlocRecord::Utility.sql_strings(value)};
     SQL
 
-    init_object_from_row(row)
+    do
+      init_object_from_row(row)
+    rescue ArgumentError
+      raise ArgumentError.new("No record with #{attribute} = #{value}")
+    end
   end
 
   def take num=1
@@ -53,7 +61,11 @@ module Selection
       LIMIT 1;
     SQL
 
-    init_object_from_row(row)
+    do
+      init_object_from_row(row)
+    rescue ArgumentError
+      raise ArgumentError.new("No records in table")
+    end
   end
 
   def first
@@ -63,7 +75,11 @@ module Selection
       ASC LIMIT 1;
     SQL
 
-    init_object_from_row(row)
+    do
+      init_object_from_row(row)
+    rescue ArgumentError
+      raise ArgumentError.new("No records in table")
+    end
   end
 
   def last
@@ -73,7 +89,11 @@ module Selection
       DESC LIMIT 1;
     SQL
 
-    init_object_from_row(row)
+    do
+      init_object_from_row(row)
+    rescue ArgumentError
+      raise ArgumentError.new("No records in table")
+    end
   end
 
   def all
@@ -90,6 +110,8 @@ module Selection
     if row
       data = Hash[columns.zip(row)]
       new(data)
+    else
+      raise ArgumentError
     end
   end
 
