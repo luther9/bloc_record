@@ -105,18 +105,25 @@ module Selection
   end
 
   def find_each options={}
+    find_in_batches(options) { |batch|
+      batch.each { |row|
+        yield(row)
+      }
+    }
+  end
+
+  def find_in_batches options={}
     options = {start: 0, batch_size: 1000}.merge(options)
     rows = connection.execute(<<-SQL)
       SELECT * FROM #{table};
     SQL
     start = options[:start]
     batch_size = options[:batch_size]
+    batch_n = 0
     while start < rows.size
-      batch = rows_to_array(rows[start, batch_size])
-      batch.each { |row|
-        yield(row)
-      }
+      yield(rows_to_array(rows[start, batch_size]), batch_n)
       start += batch_size
+      batch_n += 1
     end
   end
 
