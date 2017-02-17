@@ -104,13 +104,20 @@ module Selection
     rows_to_array(rows)
   end
 
-  def find_each
+  def find_each options={}
+    options = {start: 0, batch_size: 1000}.merge(options)
     rows = connection.execute(<<-SQL)
       SELECT * FROM #{table};
     SQL
-    rows.each { |row|
-      yield(init_object_from_row(row))
-    }
+    start = options[:start]
+    batch_size = options[:batch_size]
+    while start < rows.size
+      batch = rows_to_array(rows[start, batch_size])
+      batch.each { |row|
+        yield(row)
+      }
+      start += batch_size
+    end
   end
 
   private
