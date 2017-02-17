@@ -19,5 +19,15 @@ module BlocRecord
         self.instance_variable_set("@#{col}", options[col])
       }
     end
+
+    # Delegate find_by_* method calls to find_by.
+    def method_missing method, value
+      column = /find_by_(.+)/.match(method.to_s)[1]
+      if column
+        find_by(column, value)
+      else
+        raise NoMethodError
+      end
+    end
   end
 end
