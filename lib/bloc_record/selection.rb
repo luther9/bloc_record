@@ -104,6 +104,15 @@ module Selection
     rows_to_array(rows)
   end
 
+  def find_each
+    rows = connection.execute(<<-SQL)
+      SELECT * FROM #{table};
+    SQL
+    rows.each { |row|
+      yield(init_object_from_row(row))
+    }
+  end
+
   private
 
   def init_object_from_row row
