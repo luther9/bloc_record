@@ -161,8 +161,8 @@ module Selection
       when Symbol
         ordering.push(spec.to_s)
       when Hash
-        spec.each_pair { |column, cending|
-          ordering.push("#{column.to_s} #{cending.to_s}")
+        spec.each_pair { |column, scending|
+          ordering.push("#{column.to_s} #{scending.to_s}")
         }
       end
     }
