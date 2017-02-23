@@ -153,17 +153,24 @@ module Selection
   end
 
   def order *args
-    if args.count > 1
-      order = args.join(',')
-    else
-      order = args.first.to_s
-    end
+    ordering = []
+    args.each { |spec|
+      case spec
+      when String
+        ordering.push(spec)
+      when Symbol
+        ordering.push(spec.to_s)
+      when Hash
+        spec.each_pair { |column, cending|
+          ordering.push("#{column.to_s} #{cending.to_s}")
+        }
+      end
+    }
 
-    rows = connection.execute(<<-SQL)
+    rows_to_array(connection.execute(<<-SQL))
       SELECT * FROM #{table}
-      ORDER BY #{order};
+      ORDER BY #{ordering.join(',');
     SQL
-    rows_to_array(rows)
   end
 
   def join *args
