@@ -198,6 +198,18 @@ module Selection
     rows_to_array(rows)
   end
 
+  def joins nest
+    join_exp = nest.to_a.map { |pair|
+      key = pair[0].to_s
+      value = pair[1].to_s
+      <<-SQL
+        INNER JOIN #{key} ON #{key}.#{table}_id = #{table}.id
+        INNER JOIN #{value} ON #{value}.#{key}_id = #{key}.id
+      SQL
+    }.join("\n")
+    rows_to_array(connection.execute("SELECT * FROM #{table} #{join_exp};"))
+  end
+
   private
 
   def init_object_from_row row
