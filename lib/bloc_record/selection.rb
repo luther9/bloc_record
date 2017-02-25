@@ -207,7 +207,7 @@ module Selection
         INNER JOIN #{value} ON #{value}.#{key}_id = #{key}.id
       SQL
     }.join("\n")
-    rows_to_array(connection.execute("SELECT * FROM #{table} #{join_exp};"))
+    JoinsWithWhere.new(table, join_exp)
   end
 
   private
@@ -225,5 +225,25 @@ module Selection
     rows.map { |row|
       new(Hash[columns.zip(row)])
     }
+  end
+
+  class JoinsWhithWhere
+    def initialize table, join_exp
+      @table = table
+      @join_exp = join_exp
+      @rows = rows_to_array(connection.execute(<<-SQL))
+        SELECT * FROM #@table #@join_exp;
+      SQL
+    end
+
+    def method_missing *args, &block
+      @rows.send(*args, &block)
+    end
+
+    def where string
+      rows_to_array(connection.execute(<<-SQL))
+        SELECT * FROM #@table #@join_exp WHERE #{string};
+      SQL
+    end
   end
 end
