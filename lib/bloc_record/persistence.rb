@@ -60,31 +60,39 @@ module Persistence
 
     #7
     def update ids, updates
-      updates = BlocRecord::Utility.convert_keys(updates)
-      updates.delete('id')
-      updates_array = updates.map { |key, value|
-        "#{key}=#{BlocRecord::Utility.sql_strings(value)}"
-      }
+      if ids.is_a?(Array) && updates.is_a?(Array)
+        if ids.size != updates.size
+          raise 'ids and updates must be the same length'
+        end
+        ids.each_index { |i|
+          update(ids[i], updates[i])
+        }
+      else
+        updates = BlocRecord::Utility.convert_keys(updates)
+        updates.delete('id')
+        updates_array = updates.map { |key, value|
+          "#{key}=#{BlocRecord::Utility.sql_strings(value)}"
+        }
 
-      #8
-      where_clause = if ids.class == FixNum
-                       "WHERE id = #{ids}"
-                     elsif ids.class == Array
-                       if ids.empty?
-                         ''
+        where_clause = if ids.class == FixNum
+                         "WHERE id = #{ids}"
+                       elsif ids.class == Array
+                         if ids.empty?
+                           ''
+                         else
+                           "WHERE id IN (#{ids.join(',')})"
+                         end
                        else
-                         "WHERE id IN (#{ids.join(',')})"
+                         ''
                        end
-                     else
-                       ''
-                     end
 
-      connection.execute(<<-SQL)
-        UPDATE #{table}
-        SET #{updates_array * ','} #{where_clause};
-      SQL
+        connection.execute(<<-SQL)
+          UPDATE #{table}
+          SET #{updates_array * ','} #{where_clause};
+        SQL
 
-      true
+        true
+      end
     end
 
     def update_all updates
