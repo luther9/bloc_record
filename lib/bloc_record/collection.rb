@@ -8,7 +8,19 @@ module BlocRecord
     end
 
     def take num=1, rng=nil
-      self.class.new(sample(num, random: rng))
+      new(sample(num, random: rng))
+    end
+
+    def where pairs
+      new(select { |item|
+            result = true
+            pairs.each_pair { |key, value|
+              if item.send(key) != value
+                result = false
+              end
+            }
+            result
+          })
     end
   end
 end
