@@ -23,10 +23,19 @@ module BlocRecord
     end
 
     # Delegate find_by_* method calls to find_by.
-    def method_missing method, value
+    def self.method_missing method, value
       column = /find_by_(.+)/.match(method.to_s)[1]
       if column
         find_by(column, value)
+      else
+        raise NoMethodError
+      end
+    end
+
+    def method_missing method, value
+      column = /update_(.+)/.match(method.to_s)[1]
+      if column
+        self.class.update(id, column => value)
       else
         raise NoMethodError
       end
