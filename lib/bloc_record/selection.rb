@@ -131,6 +131,8 @@ module Selection
     if args.count > 1
       expression = args.shift
       params = args
+    elsif args.count == 0
+      return rows_to_array(connection.execute("SELECT * FROM #{table};"))
     else
       case args.first
       when String

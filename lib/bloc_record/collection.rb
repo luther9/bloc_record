@@ -22,5 +22,17 @@ module BlocRecord
             result
           })
     end
+
+    def not pairs
+      new(select { |item|
+            result = true
+            pairs.each_pair { |key, value|
+              if item.send(key) == value
+                result = false
+              end
+            }
+            result
+          })
+    end
   end
 end
