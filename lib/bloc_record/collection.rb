@@ -6,5 +6,9 @@ module BlocRecord
       #6
       self.any? ? self.first.class.update(ids, updates) : false
     end
+
+    def take num=1, rng=nil
+      self.class.new(sample(num, random: rng))
+    end
   end
 end
