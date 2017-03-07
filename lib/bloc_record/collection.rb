@@ -34,5 +34,11 @@ module BlocRecord
             result
           })
     end
+
+    def destroy_all
+      each { |row|
+        row.destroy
+      }
+    end
   end
 end
