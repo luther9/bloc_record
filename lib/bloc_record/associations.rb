@@ -41,4 +41,18 @@ module Associations
       end
     }
   end
+
+  def has_one(association)
+    define_method(association) {
+      row = self.class.connection.get_first_row(<<-SQL)
+        SELECT * FROM #{association}
+        WHERE id = #{self.send(association.to_s + '_id')};
+      SQL
+
+      if row
+        class_ = association.classify.constantize
+        class_.new(Hash[class_.columns.zip(row)])
+      end
+    }
+  end
 end
