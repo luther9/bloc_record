@@ -1,7 +1,6 @@
-require('sqlite3')
-
+# Class methods
 module Connection
   def connection
-    @connection ||= SQLite3::Database.new(BlocRecord.database_filename)
+    @connection ||= BlocRecord.database_type.new(BlocRecord.database_filename)
   end
 end

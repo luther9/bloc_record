@@ -12,4 +12,5 @@ Gem::Specification.new { |s|
   s.license = 'CC 0'
   s.add_runtime_dependency('sqlite3', '~> 1.3')
   s.add_runtime_dependency('activesupport')
+  s.add_runtime_dependency('pg')
 }
